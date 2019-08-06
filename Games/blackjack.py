@@ -1,7 +1,7 @@
 from random import shuffle
 
 
-def ranks(): return ["Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King"]
+def ranks(): return ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"]
 
 
 def suites(): return ["Clubs", "Diamonds", "Hearts", "Spades"]
@@ -15,23 +15,23 @@ class Card:
     def description(self):
         if self.rank == "Ace":
             value = 1 or 11
-        elif self.rank == "Jack" or self.rank == "Queen" or self.rank == "King":
+        elif self.rank == "J" or self.rank == "Q" or self.rank == "K":
             value = 10
         else:
             value = int(self.rank)
         return "The {} of {} is worth {}".format(self.rank, self.suite, value)
    
     def value(self, curvalue):
-        if self.rank == "Ace":
+        if self.rank == "A":
             value = 11 if curvalue <= 10 else 1
-        elif self.rank == "Jack" or self.rank == "Queen" or self.rank == "King":
+        elif self.rank == "J" or self.rank == "Q" or self.rank == "K":
             value = 10
         else:
             value = int(self.rank)
         return value
 
     def image(self):
-        return self.rank[0] + self.suite[0] + '.png'
+        return self.rank + self.suite[0] + '.png'
 
 
 class Deck:
