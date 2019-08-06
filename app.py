@@ -10,7 +10,7 @@ socketio = SocketIO(app)
 
 @app.route('/')
 def helloworld():
-	return 'Hello World'
+	return render_template('index.html')
 
 
 @app.route('/blackjack')
