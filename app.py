@@ -63,40 +63,40 @@ def dice():
 	pic2 = ''
 
 	if die1 == "1":
-		pic1 = "/static/die1.png"
+		pic1 = "/static/img/die/die1.png"
 
 	if die2 == "1":
-		pic2 = "/static/die1.png"
+		pic2 = "/static/img/die/die1.png"
 
 	if die1 == "2":
-		pic1 = "/static/die2.png"
+		pic1 = "/static/img/die/die2.png"
 
 	if die2 == "2":
-		pic2 = "/static/die2.png"
+		pic2 = "/static/img/die/die2.png"
 
 	if die1 == "3":
-		pic1 = "/static/die3.png"
+		pic1 = "/static/img/die/die3.png"
 
 	if die2 == "3":
-		pic2 = "/static/die3.png"
+		pic2 = "/static/img/die/die3.png"
 
 	if die1 == "4":
-		pic1 = "/static/die4.png"
+		pic1 = "/static/img/die/die4.png"
 
 	if die2 == "4":
-		pic2 = "/static/die4.png"
+		pic2 = "/static/img/die/die4.png"
 
 	if die1 == "5":
-		pic1 = "/static/die5.png"
+		pic1 = "/static/img/die/die5.png"
 
 	if die2 == "5":
-		pic2 = "/static/die5.png"
+		pic2 = "/static/img/die/die5.png"
 
 	if die1 == "6":
-		pic1 = "/static/die6.png"
+		pic1 = "/static/img/die/die6.png"
 
 	if die2 == "6":
-		pic2 = "/static/die6.png"
+		pic2 = "/static/img/die/die6.png"
 
 	number_sum = int(die1) + int(die2)
 
