@@ -1,11 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Flask Chat App</title>
+        <title>Blackjack</title>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
     </head>
     <body>
+
+	{%for i in range(0, numplayers - 1)%}
+        <p>
+            <img src="/static/img/cards/{{ hands[i]['cards'][0].image() }}" height="200px"/>
+            <img src="/static/img/cards/{{ hands[i]['cards'][1].image() }}" height="200px"/>
+			= {{ blackjack.valueofhand(hands[i]['cards']) }}
+        </p>
+    {%endfor%}
+
+    <p>
+        <img src="/static/img/cards/{{ hands[numplayers - 1]['cards'][0].image() }}" height="200px"/>
+		<img src="/static/img/cards/gray_back.png" height="200px"/>
+		= {{ hands[numplayers - 1]['cards'][0].value(0) }}
+    </p>
+
 
         <h3 style='color: #ccc;font-size: 30px;'>No message yet..</h3>
         <div class="message_holder"></div>

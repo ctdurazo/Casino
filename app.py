@@ -19,15 +19,7 @@ def twentyone():
 	numplayers = 3
 	deck = blackjack.newdeck(numdecks)
 	hands = blackjack.deal(numplayers, deck)
-	out = ''
-	for i in range(0, numplayers - 1):
-		out = out + '<p><img src="/static/img/cards/' + hands[i]['cards'][0].image() + '"/> ' \
-			+ '<img src="/static/img/cards/' + hands[i]['cards'][1].image() + '"/> = ' \
-			+ str(blackjack.valueofhand(hands[i]['cards'])) + '</p>'
-	out = out + '<p><img src="/static/img/cards/' + hands[numplayers - 1]['cards'][0].image() + '"/> ' \
-		+ '<img src="/static/img/cards/gray_back.png"/>  =' \
-		+ str(hands[numplayers - 1]['cards'][0].value(0)) + '</p>'
-	return out
+	return render_template('blackjack.html', hands=hands, numplayers=numplayers, blackjack=blackjack)
 
 
 @app.route('/roulette')
