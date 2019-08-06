@@ -1,0 +1,14 @@
+# Project exclude paths
+/venv/
+.gitignore
+.idea/.gitignore
+.idea/Casino.iml
+.idea/encodings.xml
+.idea/inspectionProfiles/
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
+Games/__pycache__/
+__pycache__/
+static/
+templates/
