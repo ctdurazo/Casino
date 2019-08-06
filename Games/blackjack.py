@@ -30,6 +30,9 @@ class Card:
             value = int(self.rank)
         return value
 
+    def image(self):
+        return self.rank[0] + self.suite[0] + '.png'
+
 
 class Deck:
     def __init__(self):
