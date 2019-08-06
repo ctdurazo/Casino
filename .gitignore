@@ -1,6 +1,5 @@
 # Project exclude paths
 /venv/
-.gitignore
 .idea/.gitignore
 .idea/Casino.iml
 .idea/encodings.xml
