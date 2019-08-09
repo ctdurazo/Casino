@@ -1,5 +1,5 @@
-from flask import Flask, render_template, request, redirect
-from flask_socketio import SocketIO, send
+from flask import Flask, render_template, session, redirect, url_for
+from flask_socketio import SocketIO, send, join_room, leave_room
 
 from Games import blackjack, roulette
 
@@ -15,11 +15,23 @@ def helloworld():
 
 @app.route('/blackjack')
 def twentyone():
-	numdecks = 4
-	numplayers = 3
-	deck = blackjack.newdeck(numdecks)
-	hands = blackjack.deal(numplayers, deck)
-	return render_template('blackjack.html', hands=hands, numplayers=numplayers, blackjack=blackjack)
+	return render_template('blackjack.html', hands=hands, players=players, blackjack=blackjack)
+
+
+@app.route('/deal')
+def deal():
+	global hands
+	initshoe()
+	if hands == {}:
+		hands = blackjack.deal(players, shoe)
+	return redirect(url_for('twentyone'))
+
+
+def initshoe():
+	numdecks = 8
+	global shoe
+	if shoe is None or len(shoe) < .25 * numdecks * 52:
+		shoe = blackjack.newshoe(numdecks)
 
 
 @app.route('/roulette')
@@ -105,11 +117,52 @@ def handle_messagesent(json, methods=['GET', 'POST']):
 	socketio.emit('message', json, callback=messagereceived)
 
 
-@socketio.on('message')
-def handle_message(msg):
-	print('Message: ' + msg)
-	send(msg, broadcast=True)
+# @socketio.on('message')
+# def handle_message(msg):
+# 	print('Message: ' + msg)
+# 	send(msg, broadcast=True)
 
+
+@socketio.on('hitSent')
+def handle_hitsent(json, methods=['GET', 'POST']):
+	global hands
+	hands = blackjack.hit(json.get("user_name"), shoe, hands)
+	json['card_name'] = hands[json.get("user_name")][-1].image()
+	json['value'] = blackjack.valueofhand(hands[json.get("user_name")])
+	socketio.emit('hit', json, callback=messagereceived)
+
+
+# @socketio.on('hit')
+# def handle_hit(msg):
+# 	print('Message: ' + msg)
+# 	send(msg, broadcast=True)
+
+
+@socketio.on('join')
+def on_join(json, methods=['GET', 'POST']):
+	global players
+	user_name = json['user_name']
+	room = json['room']
+	if user_name not in players:
+		join_room(room)
+		players.append(user_name)
+		send(user_name + ' has entered the room.', room=room)
+
+
+@socketio.on('leave')
+def on_leave(data):
+	global players
+	user_name = data['user_name']
+	room = data['room']
+	leave_room(room)
+	players.remove(user_name)
+	send(user_name + ' has left the room.', room=room)
+
+
+# Global Scope
+shoe = None
+hands = {}
+players = []
 
 if __name__ == '__main__':
 	socketio.run(app)

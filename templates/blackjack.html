@@ -7,20 +7,24 @@
     </head>
     <body>
 
-	{%for i in range(0, numplayers - 1)%}
-        <p>
-            <img src="/static/img/cards/{{ hands[i]['cards'][0].image() }}" height="200px"/>
-            <img src="/static/img/cards/{{ hands[i]['cards'][1].image() }}" height="200px"/>
-			= {{ blackjack.valueofhand(hands[i]['cards']) }}
-        </p>
-    {%endfor%}
-
-    <p>
-        <img src="/static/img/cards/{{ hands[numplayers - 1]['cards'][0].image() }}" height="200px"/>
-		<img src="/static/img/cards/gray_back.png" height="200px"/>
-		= {{ hands[numplayers - 1]['cards'][0].value(0) }}
-    </p>
-
+        {% if hands %}
+            {% for player in players %}
+                <div><span class="card_holder">
+                        <img src="/static/img/cards/{{ hands[player][0].image() }}" height="200px"/>
+                        <img src="/static/img/cards/{{ hands[player][1].image() }}" height="200px"/>
+                    </span>
+                    <span id="handvalue">{{ blackjack.valueofhand(hands[player]) }}</span>
+                    <button type="button" id="hitBtn">Hit</button>
+                </div>
+            {% endfor %}
+                <div>
+                    <span class="dealer_holder">
+                        <img src="/static/img/cards/{{ hands['dealer'][0].image() }}" height="200px"/>
+                        <img src="/static/img/cards/gray_back.png" height="200px"/>
+                    </span>
+                    <span id="dealervalue">{{ hands['dealer'][0].value(0) }}</span>
+                </div>
+        {% endif %}
 
         <h3 style='color: #ccc;font-size: 30px;'>No message yet..</h3>
         <div class="message_holder"></div>
@@ -31,9 +35,14 @@
             <input type="submit"/>
         </form>
 
+        <button type="button" id="joinBtn">Join</button>
+        {% if players %}
+            <button onClick="window.location.href='/deal';">Deal</button>
+        {% endif %}
 
         <script type="text/javascript">
             $(document).ready(function () {
+                let user_name = $('input.username');
                 const socket = io.connect('http://' + document.domain + ':' + location.port);
                 socket.on('connect', function () {
                     socket.send('User has connected!');
@@ -41,23 +50,39 @@
                 socket.on('message', function(msg) {
                     if( typeof msg.user_name !== 'undefined' ) {
                          $('h3').text('');
-                         $('div.message_holder').append('<div><b style="color: #000">'+msg.user_name+'</b> '+msg.message+'</div>');
+                         $('div.message_holder').append('<div><b style="color: #000">'+msg.user_name+'</b> '+msg.message+'</div');
                     }
+                });
+                socket.on('hit', function(msg) {
+                    if( typeof msg.user_name !== 'undefined' ) {
+                         $('span.card_holder').append('<img src="/static/img/cards/'+msg.card_name+'" height="200px"/>');
+                         $('#handvalue').html(msg.value);
+                    }
+                });
+                $('#joinBtn').on('click', function () {
+                    if (typeof $(user_name).val() !== undefined) {
+                        socket.emit('join', {
+                            user_name: $(user_name).val(),
+                            room: 'blackjack'
+                        });
+                    }
+                });
+                $('#hitBtn').on('click', function () {
+                    let value = $('#handvalue').val;
+                    socket.emit('hitSent', {
+                        user_name : $(user_name).val(),
+                        card_name: 'gray_back.png',
+                        value: value
+                    });
                 });
                 $('form').on( 'submit', function(e) {
                     e.preventDefault();
-                    let user_name = $('input.username').val();
                     let user_input = $('input.message');
                     socket.emit( 'messageSent', {
-                        user_name : user_name,
+                        user_name : $(user_name).val(),
                         message : user_input.val()
                     });
                     user_input.val('').focus();
-                });
-                $('#sendButton').on('click', function () {
-                    var myMessage = $('#myMessage');
-                    socket.send(myMessage.val());
-                    myMessage.val("");
                 });
             });
         </script>

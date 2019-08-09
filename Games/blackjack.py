@@ -46,26 +46,38 @@ class Deck:
         return len(self.contents)
 
     
-def newdeck(numdecks):
-    decks = []
-    for i in range(1, numdecks):
+def newshoe(numdecks):
+    shoe = []
+    for i in range(0, numdecks):
         deck = Deck()
-        decks.extend(deck.contents)
-        shuffle(decks)
-    shuffle(decks)
-    return decks
+        shoe.extend(deck.contents)
+        shuffle(shoe)
+    shuffle(shoe)
+    return shoe
 
     
-def deal(numplayers, deck):
-    hands = []
-    for i in range(0, numplayers):
-        hands.append({'player': i, 'cards': []})
-    
-    for i in range(0, numplayers):
-        hands[i]['cards'].append(deck.pop())
-       
-    for i in range(0, numplayers):
-        hands[i]['cards'].append(deck.pop())
+def deal(players, shoe):
+    hands = {}
+    if players:
+        for i in players:
+            hands[i] = []
+
+        hands['dealer'] = []
+
+        for i in players:
+            hands[i].append(shoe.pop())
+
+        hands['dealer'].append(shoe.pop())
+
+        for i in players:
+            hands[i].append(shoe.pop())
+
+        hands['dealer'].append(shoe.pop())
+    return hands
+
+
+def hit(player, shoe, hands):
+    hands[player].append(shoe.pop())
     return hands
 
 
