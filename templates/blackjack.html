@@ -9,7 +9,8 @@
 
         {% if hands %}
             {% for player in players %}
-                <div><span class="card_holder">
+                <div>
+                    <span class="card_holder">
                         <img src="/static/img/cards/{{ hands[player][0].image() }}" height="200px"/>
                         <img src="/static/img/cards/{{ hands[player][1].image() }}" height="200px"/>
                     </span>
@@ -50,7 +51,7 @@
                 socket.on('message', function(msg) {
                     if( typeof msg.user_name !== 'undefined' ) {
                          $('h3').text('');
-                         $('div.message_holder').append('<div><b style="color: #000">'+msg.user_name+'</b> '+msg.message+'</div');
+                         $('div.message_holder').append('<div><b style="color: #000">'+msg.user_name+'</b> '+msg.message+'</div>');
                     }
                 });
                 socket.on('hit', function(msg) {
