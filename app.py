@@ -22,8 +22,7 @@ def twentyone():
 def deal():
 	global hands
 	initshoe()
-	if hands == {}:
-		hands = blackjack.deal(players, shoe)
+	hands = blackjack.deal(players, shoe)
 	return redirect(url_for('twentyone'))
 
 
@@ -117,12 +116,6 @@ def handle_messagesent(json, methods=['GET', 'POST']):
 	socketio.emit('message', json, callback=messagereceived)
 
 
-# @socketio.on('message')
-# def handle_message(msg):
-# 	print('Message: ' + msg)
-# 	send(msg, broadcast=True)
-
-
 @socketio.on('hitSent')
 def handle_hitsent(json, methods=['GET', 'POST']):
 	global hands
@@ -130,12 +123,6 @@ def handle_hitsent(json, methods=['GET', 'POST']):
 	json['card_name'] = hands[json.get("user_name")][-1].image()
 	json['value'] = blackjack.valueofhand(hands[json.get("user_name")])
 	socketio.emit('hit', json, callback=messagereceived)
-
-
-# @socketio.on('hit')
-# def handle_hit(msg):
-# 	print('Message: ' + msg)
-# 	send(msg, broadcast=True)
 
 
 @socketio.on('join')

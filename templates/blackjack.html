@@ -14,16 +14,19 @@
                         <img src="/static/img/cards/{{ hands[player][0].image() }}" height="200px"/>
                         <img src="/static/img/cards/{{ hands[player][1].image() }}" height="200px"/>
                     </span>
-                    <span id="handvalue">{{ blackjack.valueofhand(hands[player]) }}</span>
+                    <span id="handvalue_{{ player }}">{{ blackjack.valueofhand(hands[player]) }}</span>
                     <button type="button" id="hitBtn">Hit</button>
+                    <button type="button" id="standBtn">Stand</button>
                 </div>
             {% endfor %}
                 <div>
                     <span class="dealer_holder">
                         <img src="/static/img/cards/{{ hands['dealer'][0].image() }}" height="200px"/>
+                        <img src="/static/img/cards/{{ hands['dealer'][1].image() }}" height="200px" style="display: none"/>
                         <img src="/static/img/cards/gray_back.png" height="200px"/>
                     </span>
                     <span id="dealervalue">{{ hands['dealer'][0].value(0) }}</span>
+                    <span id="truedealervalue" style="display: none">{{ blackjack.valueofhand(hands['dealer']) }}</span>
                 </div>
         {% endif %}
 
@@ -43,48 +46,82 @@
 
         <script type="text/javascript">
             $(document).ready(function () {
-                let user_name = $('input.username');
+                let user_name = $('input.username').val();
+                let hand_value = $('#handvalue_'+user_name);
+                let dealer_holder = $('span.dealer_holder');
+                let dealer_value = $('#dealervalue');
                 const socket = io.connect('http://' + document.domain + ':' + location.port);
                 socket.on('connect', function () {
                     socket.send('User has connected!');
                 });
                 socket.on('message', function(msg) {
                     if( typeof msg.user_name !== 'undefined' ) {
-                         $('h3').text('');
-                         $('div.message_holder').append('<div><b style="color: #000">'+msg.user_name+'</b> '+msg.message+'</div>');
+                        $('h3').text('');
+                        $('div.message_holder').append('<div><b style="color: #000">'+msg.user_name+'</b> '+msg.message+'</div>');
                     }
                 });
                 socket.on('hit', function(msg) {
                     if( typeof msg.user_name !== 'undefined' ) {
-                         $('span.card_holder').append('<img src="/static/img/cards/'+msg.card_name+'" height="200px"/>');
-                         $('#handvalue').html(msg.value);
+                        if (msg.user_name === 'dealer') {
+                            $(dealer_holder).append('<img src="/static/img/cards/' + msg.card_name + '" height="200px"/>');
+                            $(dealer_value).html(msg.value);
+                            if (msg.value > 21) {
+                                $(dealer_value).html("Bust");
+                            } else if (msg.value < 18) {
+                                dealerHit();
+                            }
+                        } else {
+                            $('span.card_holder').append('<img src="/static/img/cards/' + msg.card_name + '" height="200px"/>');
+                            $(hand_value).html(msg.value);
+                            if (msg.value > 21) {
+                                $(hand_value).html("Bust");
+                                $('#hitBtn').hide();
+                                $('#standBtn').hide();
+                            }
+                        }
                     }
                 });
                 $('#joinBtn').on('click', function () {
-                    if (typeof $(user_name).val() !== undefined) {
+                    if (typeof user_name !== undefined) {
                         socket.emit('join', {
-                            user_name: $(user_name).val(),
+                            user_name: user_name,
                             room: 'blackjack'
                         });
                     }
                 });
                 $('#hitBtn').on('click', function () {
-                    let value = $('#handvalue').val;
                     socket.emit('hitSent', {
-                        user_name : $(user_name).val(),
+                        user_name : user_name,
                         card_name: 'gray_back.png',
-                        value: value
+                        value: $(hand_value).html()
                     });
+                });
+                $('#standBtn').on('click', function () {
+                    $('#hitBtn').hide();
+                    $('#standBtn').hide();
+                    $($(dealer_holder).children('img')[1]).show();
+                    $($(dealer_holder).children('img')[2]).remove();
+                    $(dealer_value).html($('#truedealervalue').html());
+                    if ($(dealer_value).html() < 18){
+                        dealerHit();
+                    }
                 });
                 $('form').on( 'submit', function(e) {
                     e.preventDefault();
                     let user_input = $('input.message');
                     socket.emit( 'messageSent', {
-                        user_name : $(user_name).val(),
+                        user_name : user_name,
                         message : user_input.val()
                     });
                     user_input.val('').focus();
                 });
+                function dealerHit() {
+                    socket.emit('hitSent', {
+                        user_name : 'dealer',
+                        card_name: 'gray_back.png',
+                        value: $(dealer_value).html()
+                    });
+                }
             });
         </script>
     </body>
