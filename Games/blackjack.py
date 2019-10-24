@@ -1,4 +1,5 @@
 from random import shuffle
+import operator
 
 
 def ranks(): return ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"]
@@ -13,7 +14,7 @@ class Card:
         self.suite = suite
 
     def description(self):
-        if self.rank == "Ace":
+        if self.rank == "A":
             value = 1 or 11
         elif self.rank == "J" or self.rank == "Q" or self.rank == "K":
             value = 10
@@ -82,6 +83,7 @@ def hit(player, shoe, hands):
 
 
 def valueofhand(cards):
+    cards.sort(key=operator.attrgetter('rank'))
     value = 0
     for i in range(0, len(cards)):
         value = value + cards[i].value(value)

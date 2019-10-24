@@ -102,11 +102,20 @@
                     $($(dealer_holder).children('img')[1]).show();
                     $($(dealer_holder).children('img')[2]).remove();
                     $(dealer_value).html($('#truedealervalue').html());
-                    if ($(dealer_value).html() < 18){
-                        dealerHit();
+                    if ($(dealer_value).html() <= 17) {
+                        if ($(dealer_value).html() === 17) {
+                            for (var i in $(dealer_holder).children('img')) {
+                                if ($(dealer_holder).children('img')[i].src.contains("A")){
+                                    dealerHit();
+                                }
+                            }
+                        }
+                        else {
+                            dealerHit();
+                        }
                     }
                 });
-                $('form').on( 'submit', function(e) {
+                $('form').on('submit', function(e) {
                     e.preventDefault();
                     let user_input = $('input.message');
                     socket.emit( 'messageSent', {
